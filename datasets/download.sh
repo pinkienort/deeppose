@@ -15,7 +15,7 @@ wget http://cims.nyu.edu/~tompson/data/tr_plus_indices.mat
 cd ..
 
 # Get LSP Extended Training Dataset
-wget http://www.comp.leeds.ac.uk/mat4saj/lspet_dataset.zip
+wget http://sam.johnson.io/research/lspet_dataset.zip
 unzip lspet_dataset.zip
 rm -rf lspet_dataset.zip
 mkdir lspet_dataset
