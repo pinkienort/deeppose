@@ -60,15 +60,10 @@ class PoseEstimationError(chainer.Chain):
     def __init__(self, predictor):
         super(PoseEstimationError, self).__init__(predictor=predictor)
         self.lossfun = mean_squared_error
-        self.y = None
-        self.loss = None
 
     def __call__(self, *args):
         x, t, ignore = args[:3]
-        self.y = None
-        self.loss = None
-        self.pre_rec = None
-        self.y = self.predictor(x)
-        self.loss = self.lossfun(self.y, t, ignore)
-        reporter.report({'loss': self.loss}, self)
-        return self.loss
+        y = self.predictor(x)
+        loss = self.lossfun(y, t, ignore)
+        reporter.report({'loss': loss}, self)
+        return loss
