@@ -23,7 +23,9 @@ class PoseDataset(dataset_mixin.DatasetMixin):
                  zoom, base_zoom, zoom_range, translate, translate_range,
                  min_dim, coord_normalize, gcn, joint_num, fname_index,
                  joint_index, symmetric_joints, ignore_label):
-        for key, val in locals().items():
+        # pdbにおけるRuntimeErrorを防ぐため, localsと切り離す
+        _litems = locals().items()
+        for key, val in _litems:
             setattr(self, key, val)
         self.symmetric_joints = json.loads(symmetric_joints)
         self.load_images()
@@ -55,8 +57,10 @@ class PoseDataset(dataset_mixin.DatasetMixin):
         for line in csv.reader(open(self.csv_fn)):
             image_id = line[self.fname_index]
             if image_id in self.images:
+                # 同じ画像でjointsが違う場合がある
                 image = self.images[image_id]
             else:
+                # 初めての画像登録
                 img_fn = '{}/{}'.format(self.img_dir, image_id)
                 assert os.path.exists(img_fn), \
                     'File not found: {}'.format(img_fn)
@@ -64,7 +68,7 @@ class PoseDataset(dataset_mixin.DatasetMixin):
                 self.images[image_id] = image
 
             coords = [float(c) for c in line[self.joint_index:]]
-            joints = np.array(list(zip(coords[0::2], coords[1::2])))
+            joints = np.array(list(zip(coords[0::2], coords[1::2]))) # xy
 
             # Ignore small label regions smaller than min_dim
             ig = [0 if v == self.ignore_label else 1 for v in joints.flatten()]
@@ -76,6 +80,7 @@ class PoseDataset(dataset_mixin.DatasetMixin):
 
             self.joints.append((image_id, joints))
             center_x, center_y = self.calc_joint_center(available_joints)
+            # 後のクロッピングのためにbboxとcenter pos
             self.info.append((ig, bbox_w, bbox_h, center_x, center_y))
 
     def __len__(self):
