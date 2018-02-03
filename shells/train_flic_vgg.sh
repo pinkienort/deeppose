@@ -1,18 +1,17 @@
 #!/bin/bash
 # Copyright (c) 2016 Shunta Saito
-set -x
 
 CHAINER_TYPE_CHECK=0 \
-time python scripts/train_single.py \
---model models/AlexNet.py \
+python scripts/train.py \
+--model models/VGG_BN.py \
 --gpus 0 \
---epoch 100 \
---batchsize 128 \
+--epoch 10 \
+--batchsize 8 \
 --snapshot 10 \
 --valid_freq 5 \
---train_csv_fn data/lspet_dataset/train_joints.csv \
---test_csv_fn data/lspet_dataset/test_joints.csv \
---img_dir data/lspet_dataset/images \
+--train_csv_fn data/FLIC-full/train_joints.csv \
+--test_csv_fn data/FLIC-full/test_joints.csv \
+--img_dir data/FLIC-full/images \
 --test_freq 10 \
 --seed 1701 \
 --im_size 220 \
@@ -25,8 +24,8 @@ time python scripts/train_single.py \
 --translate_range 5 \
 --coord_normalize \
 --gcn \
---n_joints 14 \
+--n_joints 7 \
 --fname_index 0 \
 --joint_index 1 \
---symmetric_joints "[[8, 9], [7, 10], [6, 11], [2, 3], [1, 4], [0, 5]]" \
+--symmetric_joints "[[2, 4], [1, 5], [0, 6]]" \
 --opt Adam

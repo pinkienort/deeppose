@@ -1,11 +1,10 @@
 #!/bin/bash
 # Copyright (c) 2016 Shunta Saito
-set -x
 
 CHAINER_TYPE_CHECK=0 \
-time python scripts/train_single.py \
+python -m pdb scripts/train.py \
 --model models/AlexNet.py \
---gpus 0 \
+--gpus 0,1,2,3 \
 --epoch 100 \
 --batchsize 128 \
 --snapshot 10 \
