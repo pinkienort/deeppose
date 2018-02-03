@@ -191,9 +191,7 @@ if __name__ == '__main__':
     )
 
     devices = tuple(args.gpus)
-    train_iters = [
-        iterators.MultiprocessIterator(i, args.batchsize)
-        for i in chainer.datasets.split_dataset_n_random(train_dataset, len(devices))]
+    train_iter = iterators.MultiprocessIterator(train_dataset, args.batchsize)
 
     test_iter = iterators.MultiprocessIterator(
         test_dataset, args.batchsize, repeat=False, shuffle=False)
@@ -206,7 +204,7 @@ if __name__ == '__main__':
     chainer.config.use_cudnn           = 'always'
     chainer.config.show()
 
-    updater = updaters.MultiprocessParallelUpdater(train_iters, opt, devices=devices)
+    updater = training.StandardUpdater(train_iter, opt, device=device[0])
 
     interval = (args.snapshot, 'epoch')
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=result_dir)
@@ -214,7 +212,7 @@ if __name__ == '__main__':
 
     # Save parameters and optimization state
     trainer.extend(extensions.snapshot_object(
-        model, 'epoch-{.updater.epoch}.model'), trigger=interval)
+        model.predictor, 'epoch-{.updater.epoch}.model'), trigger=interval)
     trainer.extend(extensions.snapshot_object(
         opt, 'epoch-{.updater.epoch}.state'), trigger=interval)
     trainer.extend(extensions.snapshot(), trigger=interval)
@@ -233,5 +231,7 @@ if __name__ == '__main__':
     trainer.extend(
         extensions.Evaluator(test_iter, model, device=args.gpus[0]),
         trigger=(args.valid_freq, 'epoch'))
+
+    trainer.extend(extensions.ProgressBar(update_interval=10))
 
     trainer.run()
