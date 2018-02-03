@@ -15,6 +15,7 @@ import json
 import logging
 import numpy as np
 import os
+from tqdm import tqdm
 
 
 class PoseDataset(dataset_mixin.DatasetMixin):
@@ -54,7 +55,7 @@ class PoseDataset(dataset_mixin.DatasetMixin):
         self.images = {}
         self.joints = []
         self.info = []
-        for line in csv.reader(open(self.csv_fn)):
+        for line in tqdm(csv.reader(open(self.csv_fn))):
             image_id = line[self.fname_index]
             if image_id in self.images:
                 # 同じ画像でjointsが違う場合がある
