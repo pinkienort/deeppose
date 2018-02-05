@@ -234,7 +234,7 @@ class PoseDataset(dataset_mixin.DatasetMixin):
         w = np.clip(w, 1, image.shape[1] - x)
         h = np.clip(h, 1, image.shape[0] - y)
         image = image[y:y + h, x:x + w]
-        
+
         check_bounds(joints, x, y, x + w, y + h)
         joints[:, 0] = np.clip(joints[:, 0], x, x + w - 1)
         joints[:, 1] = np.clip(joints[:, 1], y, y + h - 1)
@@ -319,15 +319,21 @@ class PoseDataset(dataset_mixin.DatasetMixin):
             image = self.apply_gcn(image)
 
         image = np.asarray(image, dtype=np.float32)  # HWC BGR
+        image = image.transpose(2, 0, 1) # convert to CHW
         valid_joints = np.asarray(valid_joints, dtype=np.float32)
         joints[is_valid_joints] = valid_joints.reshape(-1)
         joints[~is_valid_joints] = 0.0
         check_bounds(joints, *bbox)
 
-        misc = None
+        # NOTE: A joint is described (x, y).
+        # That [x:2] joint list to [x*2] list.
+        joints = joints.ravel().astype(np.float32)
+        is_valid_joints = is_valid_joints.ravel().astype(np.int32)
+
         if self.should_return_bbox:
             misc = dict(bbox=crop_bbox, orig_tightest_bbox=np.array(orig_bbox), image_id=img_id)
-        return image, joints, is_valid_joints, misc
+            return image, joints, is_valid_joints, misc
+        return image, joints, is_valid_joints
 
 
 def check_bounds(joints, x, y, w, h, exclude_upper_bound=False):

@@ -26,8 +26,8 @@ import sys
 import tempfile
 import time
 
-
-
+# deepose_tf
+from deeppose_tf.scripts.dataset import PoseDataset as PoseDatasetTf
 
 def create_result_dir(model_path, resume_model):
     if not os.path.exists('results'):
@@ -175,20 +175,52 @@ if __name__ == '__main__':
                         adam_beta1=args.adam_beta1, adam_beta2=args.adam_beta2,
                         adam_eps=args.adam_eps, weight_decay=args.weight_decay,
                         resume_opt=args.resume_opt)
-    train_dataset = dataset.PoseDataset(
-        args.train_csv_fn, args.img_dir, args.im_size, args.fliplr,
-        args.rotate, args.rotate_range, args.zoom, args.base_zoom,
-        args.zoom_range, args.translate, args.translate_range, args.min_dim,
-        args.coord_normalize, args.gcn, args.n_joints, args.fname_index,
-        args.joint_index, args.symmetric_joints, args.ignore_label
+    train_dataset = PoseDatasetTf(
+        '/lhome/hisakazu-fu/datasets/lsp_ext/example_train_joints.csv', '', 227,
+        fliplr=True,
+        rotate=False,
+        rotate_range=10,
+        shift=0.1,
+        bbox_extension_range=(1.2, 2.0),
+        min_dim=5,
+        coord_normalize=True,
+        gcn=True,
+        fname_index=0,
+        joint_index=1,
+        symmetric_joints='[[8, 9], [7, 10], [6, 11], [2, 3], [1, 4], [0, 5]]',
+        ignore_label=-1,
+        should_downscale_images=False,
+        downscale_height=480
     )
-    test_dataset = dataset.PoseDataset(
-        args.test_csv_fn, args.img_dir, args.im_size, args.fliplr,
-        args.rotate, args.rotate_range, args.zoom, args.base_zoom,
-        args.zoom_range, args.translate, args.translate_range, args.min_dim,
-        args.coord_normalize, args.gcn, args.n_joints, args.fname_index,
-        args.joint_index, args.symmetric_joints, args.ignore_label
+    test_dataset = PoseDatasetTf(
+        '/lhome/hisakazu-fu/datasets/lsp_ext/example_test_joints.csv', '', 227,
+        fliplr=False, rotate=False,
+        shift=None,
+        bbox_extension_range=(1.2, 2.0),
+        coord_normalize=True,
+        gcn=True,
+        fname_index=0,
+        joint_index=1,
+        symmetric_joints='[[8, 9], [7, 10], [6, 11], [2, 3], [1, 4], [0, 5]]',
+        ignore_label=-1,
+        should_return_bbox=True,
+        should_downscale_images=False,
+        downscale_height=480
     )
+    # train_dataset = dataset.PoseDataset(
+    #     args.train_csv_fn, args.img_dir, args.im_size, args.fliplr,
+    #     args.rotate, args.rotate_range, args.zoom, args.base_zoom,
+    #     args.zoom_range, args.translate, args.translate_range, args.min_dim,
+    #     args.coord_normalize, args.gcn, args.n_joints, args.fname_index,
+    #     args.joint_index, args.symmetric_joints, args.ignore_label
+    # )
+    # test_dataset = dataset.PoseDataset(
+    #     args.test_csv_fn, args.img_dir, args.im_size, args.fliplr,
+    #     args.rotate, args.rotate_range, args.zoom, args.base_zoom,
+    #     args.zoom_range, args.translate, args.translate_range, args.min_dim,
+    #     args.coord_normalize, args.gcn, args.n_joints, args.fname_index,
+    #     args.joint_index, args.symmetric_joints, args.ignore_label
+    # )
 
     devices = tuple(args.gpus)
     train_iter = iterators.SerialIterator(train_dataset, args.batchsize)
