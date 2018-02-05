@@ -9,6 +9,8 @@ from __future__ import unicode_literals
 
 import argparse
 
+from deeppose_tf.scripts.cmd_options import cast_downscale_height
+
 
 def get_arguments():
     parser = argparse.ArgumentParser()
@@ -80,6 +82,26 @@ def get_arguments():
     parser.add_argument(
         '--gcn', action='store_true', default=False,
         help=('Perform global contrast normalization for each input image'))
+    # NOTE: Add following dataset options from deeppose_tf.
+    # Import functions to preprocess the options.
+    parser.add_argument(
+        '--shift', type=float, default=0.0,
+        help=('Max shift. Randomly shift bounding box for data augmentation. '
+              'The value is the fraction of the bbox width and height.'))
+    parser.add_argument(
+        '--bbox_extension_min', type=float, default=None,
+        help=('The min multiplier for joints bounding box.'))
+    parser.add_argument(
+        '--bbox_extension_max', type=float, default=None,
+        help=('The max multiplier for joints bounding box.'))
+    parser.add_argument(
+        '--should_downscale_images', action='store_true', default=False,
+        help=('Downscale all images when loading to $downscale_height, '
+            'rescale gt joints appropriately.'))
+    parser.add_argument(
+        '--downscale_height', type=cast_downscale_height, default=480,
+        help='Downscale images to this height if their height is bigger than this value. '
+             '(default=480px)')
 
     # Data configuration
     parser.add_argument('--n_joints', type=int, default=7)

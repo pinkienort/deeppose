@@ -276,8 +276,15 @@ class PoseDataset(dataset_mixin.DatasetMixin):
         if shift is None:
             shift = self.shift
         img_id, joints = self.joints[i]
-        # print(img_id)
         image = self.images[img_id]
+        def get_int_image_id(img_id):
+            # Get only int id from original id which may have a prefix.
+            # Supported dataset is FLIC, LSP-ext, MPII only.
+            img_id = os.path.basename(img_id)
+            if img_id[0:2] == 'im': # im... (for MPII)
+                img_id = img_id[2:]
+            return int(img_id.split('.')[0].split('-')[-1])
+        int_img_id = get_int_image_id(img_id)
         is_valid_joints, orig_bbox = self.info[i]
 
         # WARNING! Some vars can be changed by methods in-place!!!
@@ -331,8 +338,10 @@ class PoseDataset(dataset_mixin.DatasetMixin):
         is_valid_joints = is_valid_joints.ravel().astype(np.int32)
 
         if self.should_return_bbox:
-            misc = dict(bbox=crop_bbox, orig_tightest_bbox=np.array(orig_bbox), image_id=img_id)
-            return image, joints, is_valid_joints, misc
+            # NOTE: Return 1. crop_bbox, 2. orig_box, 3. image_id individually,
+            # because dictionary object cannot be subscribled.
+            # misc = dict(bbox=crop_bbox, orig_tightest_bbox=np.array(orig_bbox), image_id=img_id)
+            return image, joints, is_valid_joints, crop_bbox, orig_bbox, int_img_id
         return image, joints, is_valid_joints
 
 

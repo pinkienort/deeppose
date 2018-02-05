@@ -7,7 +7,7 @@
 
 import argparse
 import os.path
-from config import *
+# from config import *
 
 
 def cast_path(value):

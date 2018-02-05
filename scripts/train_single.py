@@ -177,36 +177,35 @@ if __name__ == '__main__':
                         resume_opt=args.resume_opt)
     img_dir_prefix = '' # This variable used in deeppose_tf
     train_dataset = PoseDatasetTf(
-        args.train_csv_fn, args.img_dir, 227,
-        fliplr=True,
-        rotate=False,
-        rotate_range=10,
-        shift=0.1,
-        bbox_extension_range=(1.2, 2.0),
-        min_dim=5,
-        coord_normalize=True,
-        gcn=True,
-        fname_index=0,
-        joint_index=1,
-        symmetric_joints='[[8, 9], [7, 10], [6, 11], [2, 3], [1, 4], [0, 5]]',
-        ignore_label=-1,
-        should_downscale_images=False,
-        downscale_height=480
+        args.train_csv_fn, args.img_dir, args.im_size,
+        fliplr=args.fliplr,
+        rotate=args.rotate,
+        rotate_range=args.rotate_range,
+        shift=args.shift,
+        bbox_extension_range=(args.bbox_extension_min, args.bbox_extension_max),
+        min_dim=args.min_dim,
+        coord_normalize=args.coord_normalize,
+        gcn=args.gcn,
+        fname_index=args.fname_index,
+        joint_index=args.joint_index,
+        symmetric_joints=args.symmetric_joints,
+        ignore_label=args.ignore_label,
+        should_downscale_images=args.should_downscale_images,
+        downscale_height=args.downscale_height
     )
     test_dataset = PoseDatasetTf(
-        args.test_csv_fn, args.img_dir, 227,
-        fliplr=False, rotate=False,
-        shift=None,
-        bbox_extension_range=(1.2, 2.0),
-        coord_normalize=True,
-        gcn=True,
-        fname_index=0,
-        joint_index=1,
-        symmetric_joints='[[8, 9], [7, 10], [6, 11], [2, 3], [1, 4], [0, 5]]',
-        ignore_label=-1,
-        should_return_bbox=True,
-        should_downscale_images=False,
-        downscale_height=480
+        args.test_csv_fn, args.img_dir, args.im_size,
+        # Following four variable side are fixed in test
+        fliplr=False, rotate=False, shift=None, should_return_bbox=True,
+        bbox_extension_range=(args.bbox_extension_min, args.bbox_extension_max),
+        coord_normalize=args.coord_normalize,
+        gcn=args.gcn,
+        fname_index=args.fname_index,
+        joint_index=args.joint_index,
+        symmetric_joints=args.symmetric_joints,
+        ignore_label=args.ignore_label,
+        should_downscale_images=args.should_downscale_images,
+        downscale_height=args.downscale_height
     )
     # train_dataset = dataset.PoseDataset(
     #     args.train_csv_fn, args.img_dir, args.im_size, args.fliplr,
