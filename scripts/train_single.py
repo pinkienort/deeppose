@@ -175,8 +175,9 @@ if __name__ == '__main__':
                         adam_beta1=args.adam_beta1, adam_beta2=args.adam_beta2,
                         adam_eps=args.adam_eps, weight_decay=args.weight_decay,
                         resume_opt=args.resume_opt)
+    img_dir_prefix = '' # This variable used in deeppose_tf
     train_dataset = PoseDatasetTf(
-        '/lhome/hisakazu-fu/datasets/lsp_ext/example_train_joints.csv', '', 227,
+        args.train_csv_fn, args.img_dir, 227,
         fliplr=True,
         rotate=False,
         rotate_range=10,
@@ -193,7 +194,7 @@ if __name__ == '__main__':
         downscale_height=480
     )
     test_dataset = PoseDatasetTf(
-        '/lhome/hisakazu-fu/datasets/lsp_ext/example_test_joints.csv', '', 227,
+        args.test_csv_fn, args.img_dir, 227,
         fliplr=False, rotate=False,
         shift=None,
         bbox_extension_range=(1.2, 2.0),
