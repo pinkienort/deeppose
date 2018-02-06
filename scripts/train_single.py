@@ -25,6 +25,7 @@ import shutil
 import sys
 import tempfile
 import time
+from evaluator import PoseEvaluateModel
 
 # deepose_tf
 from deeppose_tf.scripts.dataset import PoseDataset as PoseDatasetTf
@@ -253,16 +254,15 @@ if __name__ == '__main__':
         trainer.reporter.add_observer('lr', opt.lr)
         trainer.extend(IntervalShift(
             'lr', args.lr, args.lr_decay_freq, args.lr_decay_ratio))
-
     trainer.extend(extensions.LogReport(trigger=(args.show_log_iter, 'iteration')))
     trainer.extend(extensions.PrintReport([
         'epoch', 'iteration', 'main/loss', 'validation/main/loss',
-        'main/accuracy', 'validation/main/accuracy', 'lr'
+        'validation/main/PCP', 'validation/main/mPCP', 'lr'
     ]), trigger=(args.show_log_iter, 'iteration'))
 
-    trainer.extend(
-        extensions.Evaluator(test_iter, model, device=devices[0]),
-        trigger=(args.valid_freq, 'epoch'))
+    eval_model = PoseEvaluateModel(model.predictor, 'lsp')
+    trainer.extend(extensions.Evaluator(test_iter, eval_model,
+        device=devices[0]), trigger=(args.test_freq, 'epoch'))
 
     trainer.extend(extensions.ProgressBar(update_interval=2))
 

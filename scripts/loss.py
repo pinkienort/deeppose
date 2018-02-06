@@ -66,8 +66,9 @@ class PoseEstimationError(chainer.Chain):
 
     def __call__(self, *args):
         x, t, ignore = args[:3]
-        y = self.predictor(x)
-        ignored_t = (t * ignore).astype(t.dtype)
-        loss = self.lossfun(y, t)
+        with chainer.cuda.get_device(x):
+            y = self.predictor(x)
+            ignored_t = (t * ignore).astype(t.dtype)
+            loss = self.lossfun(y, t)
         reporter.report({'loss': loss}, self)
         return loss

@@ -1,16 +1,16 @@
 # Copyright (c) 2016 Artsiom Sanakoyeu
 
-import tensorflow as tf
-from tensorflow.core.framework import summary_pb2
+# import tensorflow as tf
+# from tensorflow.core.framework import summary_pb2
 import numpy as np
 import copy
 import math
 import time
 from tqdm import tqdm
 
-import alexnet
-import network_spec
-import poseevaluation
+# import alexnet
+# import network_spec
+from deeppose_tf import poseevaluation
 
 
 def create_regression_net(n_joints=14, optimizer_type=None,

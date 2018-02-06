@@ -22,7 +22,8 @@ def project_joint_onto_original_image(joints, original_bbox):
                 joints.min(), joints.max()))
     original_bbox = original_bbox.astype(int)
     x, y, w, h = original_bbox
-    projected_joints = np.array(joints, dtype=np.float32)
+    # projected_joints = np.array(joints, dtype=np.float32)
+    projected_joints = joints.copy()
     projected_joints += np.array([0.5, 0.5])
     projected_joints[:, 0] *= w
     projected_joints[:, 1] *= h

@@ -8,15 +8,15 @@ HAINER_TYPE_CHECK=0 \
 #time python -m pdb scripts/train_single.py \
 time python scripts/train_single.py \
 --model models/AlexNet.py \
---gpus 0 \
---epoch 100 \
---batchsize 2 \
---snapshot 10 \
---valid_freq 5 \
---train_csv_fn $DATASET_ROOT/example_train_joints.csv \
---test_csv_fn $DATASET_ROOT/example_test_joints.csv \
+--gpus 1 \
+--epoch 20 \
+--batchsize 64 \
+--snapshot 5 \
+--valid_freq 1 \
+--train_csv_fn $DATASET_ROOT/train_joints.csv \
+--test_csv_fn $DATASET_ROOT/test_joints.csv \
 --img_dir '' \
---test_freq 10 \
+--test_freq 1 \
 --seed 1701 \
 --im_size 227 \
 --fliplr \

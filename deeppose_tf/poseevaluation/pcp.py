@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Artsiom Sanakoyeu
 
 import numpy as np
-import poseevaluation
+from deeppose_tf import poseevaluation
 """
 The canonical part stick order:
 0 Head
