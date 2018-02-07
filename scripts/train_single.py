@@ -103,7 +103,7 @@ def get_optimizer(model, opt, lr, adam_alpha=None, adam_beta1=None,
     # The first model as the master model
     optimizer.setup(model)
 
-    if opt == 'MomentumSGD':
+    if opt in ['MomentumSGD', 'AdaGrad', 'RMSprop']:
         optimizer.add_hook(
             chainer.optimizer.WeightDecay(weight_decay))
 
@@ -176,14 +176,22 @@ if __name__ == '__main__':
                         adam_beta1=args.adam_beta1, adam_beta2=args.adam_beta2,
                         adam_eps=args.adam_eps, weight_decay=args.weight_decay,
                         resume_opt=args.resume_opt)
+
+    ## dataset
     img_dir_prefix = '' # This variable used in deeppose_tf
+    bbox_extension_range = (args.bbox_extension_min, args.bbox_extension_max)
+    if bbox_extension_range[0] is None or bbox_extension_range[1] is None:
+        bbox_extension_range = None
+        test_bbox_extension_range = None
+    else:
+        test_bbox_extension_range = (bbox_extension_range[1], bbox_extension_range[1])
     train_dataset = PoseDatasetTf(
         args.train_csv_fn, args.img_dir, args.im_size,
         fliplr=args.fliplr,
         rotate=args.rotate,
         rotate_range=args.rotate_range,
         shift=args.shift,
-        bbox_extension_range=(args.bbox_extension_min, args.bbox_extension_max),
+        bbox_extension_range=bbox_extension_range,
         min_dim=args.min_dim,
         coord_normalize=args.coord_normalize,
         gcn=args.gcn,
@@ -198,7 +206,7 @@ if __name__ == '__main__':
         args.test_csv_fn, args.img_dir, args.im_size,
         # Following four variable side are fixed in test
         fliplr=False, rotate=False, shift=None, should_return_bbox=True,
-        bbox_extension_range=(args.bbox_extension_min, args.bbox_extension_max),
+        bbox_extension_range=test_bbox_extension_range,
         coord_normalize=args.coord_normalize,
         gcn=args.gcn,
         fname_index=args.fname_index,
@@ -208,20 +216,6 @@ if __name__ == '__main__':
         should_downscale_images=args.should_downscale_images,
         downscale_height=args.downscale_height
     )
-    # train_dataset = dataset.PoseDataset(
-    #     args.train_csv_fn, args.img_dir, args.im_size, args.fliplr,
-    #     args.rotate, args.rotate_range, args.zoom, args.base_zoom,
-    #     args.zoom_range, args.translate, args.translate_range, args.min_dim,
-    #     args.coord_normalize, args.gcn, args.n_joints, args.fname_index,
-    #     args.joint_index, args.symmetric_joints, args.ignore_label
-    # )
-    # test_dataset = dataset.PoseDataset(
-    #     args.test_csv_fn, args.img_dir, args.im_size, args.fliplr,
-    #     args.rotate, args.rotate_range, args.zoom, args.base_zoom,
-    #     args.zoom_range, args.translate, args.translate_range, args.min_dim,
-    #     args.coord_normalize, args.gcn, args.n_joints, args.fname_index,
-    #     args.joint_index, args.symmetric_joints, args.ignore_label
-    # )
 
     devices = tuple(args.gpus)
     train_iter = iterators.SerialIterator(train_dataset, args.batchsize)
@@ -250,10 +244,10 @@ if __name__ == '__main__':
         opt, 'epoch-{.updater.epoch}.state'), trigger=interval)
     trainer.extend(extensions.snapshot(), trigger=interval)
 
-    if args.opt == 'MomentumSGD' or args.opt == 'AdaGrad':
-        trainer.reporter.add_observer('lr', opt.lr)
-        trainer.extend(IntervalShift(
-            'lr', args.lr, args.lr_decay_freq, args.lr_decay_ratio))
+    if args.opt in ['MomentumSGD', 'AdaGrad']:
+        trainer.extend(extensions.observe_lr(), trigger=(args.show_log_iter, 'iteration'))
+    #     trainer.extend(extensions.IntervalShift(
+    #         'lr', args.lr, args.lr_decay_freq, args.lr_decay_ratio))
     trainer.extend(extensions.LogReport(trigger=(args.show_log_iter, 'iteration')))
     trainer.extend(extensions.PrintReport([
         'epoch', 'iteration', 'main/loss', 'validation/main/loss',
@@ -261,8 +255,10 @@ if __name__ == '__main__':
     ]), trigger=(args.show_log_iter, 'iteration'))
 
     eval_model = PoseEvaluateModel(model.predictor, 'lsp')
+    # trainer.extend(extensions.Evaluator(test_iter, eval_model,
+    #     device=devices[0]), trigger=(10, 'iteration'))
     trainer.extend(extensions.Evaluator(test_iter, eval_model,
-        device=devices[0]), trigger=(args.test_freq, 'epoch'))
+        device=devices[0]), trigger=(args.test_freq, 'iteration'))
 
     trainer.extend(extensions.ProgressBar(update_interval=2))
 

@@ -78,6 +78,9 @@ class PoseDataset(dataset_mixin.DatasetMixin):
             else:
                 if not os.path.exists(img_path):
                     raise IOError('File not found: {}'.format(img_path))
+                # NOTE: chainerで動かそうとしているdeeppose_tf/scripts/dataset.pyのcv.imreadと
+                # オリジナルのdeeppose_tfのcv.imreadだと値が異なる(画素値で1か2ほど)
+                # cv.__version__が3.4.0と3.3.1で異なる。
                 image = cv.imread(img_path)  # HWC BGR image
                 if self.should_downscale_images and image.shape[0] > self.downscale_height:
                     self.downscale_factor[image_id] = float(image.shape[0]) / self.downscale_height

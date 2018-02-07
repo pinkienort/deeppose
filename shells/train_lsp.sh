@@ -9,14 +9,14 @@ HAINER_TYPE_CHECK=0 \
 time python scripts/train_single.py \
 --model models/AlexNet.py \
 --gpus 1 \
---epoch 20 \
+--epoch 500 \
 --batchsize 64 \
---snapshot 5 \
---valid_freq 1 \
+--snapshot 20 \
+--valid_freq 100 \
 --train_csv_fn $DATASET_ROOT/train_joints.csv \
 --test_csv_fn $DATASET_ROOT/test_joints.csv \
 --img_dir '' \
---test_freq 1 \
+--test_freq 100 \
 --seed 1701 \
 --im_size 227 \
 --fliplr \
@@ -35,4 +35,5 @@ time python scripts/train_single.py \
 --fname_index 0 \
 --joint_index 1 \
 --symmetric_joints "[[8, 9], [7, 10], [6, 11], [2, 3], [1, 4], [0, 5]]" \
---opt Adam
+--opt AdaGrad \
+--lr 0.00005

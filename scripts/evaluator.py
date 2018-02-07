@@ -18,10 +18,10 @@ class PoseEvaluateModel(Chain):
     def __call__(self, image, joints, is_valid_joints, crop_bbox, orig_bbox, int_img_id):
 
         ## predict joints, and calculate loss
+        y = self.predictor(image)
         with get_device(image):
-            y = self.predictor(image)
             t = (joints * is_valid_joints).astype(joints.dtype)
-            loss = mean_squared_error(y, t)
+        loss = mean_squared_error(y, t)
 
         joints = Variable(joints)
         joints.to_cpu()

@@ -141,10 +141,10 @@ def get_arguments():
     parser.add_argument(
         '--resume_model', type=str, default=None,
         help='Load model definition file to use for resuming training')
-    parser.add_argument(
-        '--resume_param', type=str, default=None,
-        help='Load learnt model parameters from this file (it\'s necessary'
-             'when you resume a training)')
+    # parser.add_argument(
+    #     '--resume_param', type=str, default=None,
+    #     help='Load learnt model parameters from this file (it\'s necessary'
+    #          'when you resume a training)')
     parser.add_argument(
         '--resume_opt', type=str, default=None,
         help='Load optimization states from this file (it\'s necessary'
