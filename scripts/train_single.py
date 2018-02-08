@@ -28,7 +28,7 @@ import time
 from evaluator import PoseEvaluateModel
 
 # deepose_tf
-from deeppose_tf.scripts.dataset import PoseDataset as PoseDatasetTf
+from deeppose_tf.scripts.dataset2 import PoseDataset2 as PoseDataset
 
 def create_result_dir(model_path, resume_model):
     if not os.path.exists('results'):
@@ -185,7 +185,7 @@ if __name__ == '__main__':
         test_bbox_extension_range = None
     else:
         test_bbox_extension_range = (bbox_extension_range[1], bbox_extension_range[1])
-    train_dataset = PoseDatasetTf(
+    train_dataset = PoseDataset(
         args.train_csv_fn, args.img_dir, args.im_size,
         fliplr=args.fliplr,
         rotate=args.rotate,
@@ -202,7 +202,7 @@ if __name__ == '__main__':
         should_downscale_images=args.should_downscale_images,
         downscale_height=args.downscale_height
     )
-    test_dataset = PoseDatasetTf(
+    test_dataset = PoseDataset(
         args.test_csv_fn, args.img_dir, args.im_size,
         # Following four variable side are fixed in test
         fliplr=False, rotate=False, shift=None, should_return_bbox=True,

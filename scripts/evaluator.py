@@ -5,6 +5,7 @@ from chainer.cuda import get_device
 from chainer.functions import mean_squared_error
 import numpy as np
 
+## deeppose_tf
 from deeppose_tf.scripts.regressionnet import calculate_metric
 from deeppose_tf import poseevaluation
 
@@ -15,7 +16,7 @@ class PoseEvaluateModel(Chain):
         super(PoseEvaluateModel, self).__init__(predictor=predictor)
         self.dataset_name = dataset_name
 
-    def __call__(self, image, joints, is_valid_joints, crop_bbox, orig_bbox, int_img_id):
+    def __call__(self, image, joints, is_valid_joints, crop_bbox, orig_bbox):
 
         ## predict joints, and calculate loss
         y = self.predictor(image)
