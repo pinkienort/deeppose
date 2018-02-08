@@ -8,7 +8,7 @@ HAINER_TYPE_CHECK=0 \
 #time python -m pdb scripts/train_single.py \
 time python scripts/train_single.py \
 --model models/AlexNet.py \
---gpus 1 \
+--gpu 2 \
 --epoch 500 \
 --batchsize 64 \
 --snapshot 20 \

@@ -27,8 +27,7 @@ def get_arguments():
         '--model', type=str, default='models/AlexNet_flic.py',
         help='Model definition file in models dir')
     parser.add_argument(
-        '--gpus', '-g', type=int, nargs="*",
-        default=[0, 1, 2, 3])
+        '--gpu', '-g', type=int, default=-1)
     parser.add_argument(
         '--train_csv_fn', type=str,
         default='data/FLIC-full/train_joints.csv')

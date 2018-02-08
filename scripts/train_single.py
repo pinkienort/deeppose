@@ -217,11 +217,10 @@ if __name__ == '__main__':
         downscale_height=args.downscale_height
     )
 
-    devices = tuple(args.gpus)
-    train_iter = iterators.SerialIterator(train_dataset, args.batchsize)
-
-    test_iter = iterators.SerialIterator(
-        test_dataset, args.batchsize, repeat=False, shuffle=False)
+    train_iter = iterators.MultiprocessIterator(
+            train_dataset, args.batchsize)
+    test_iter = iterators.MultiprocessIterator(
+            test_dataset, args.batchsize, repeat=False, shuffle=False)
 
     chainer.config.cudnn_deterministic = True  # To make sure reproduction
     chainer.config.train               = True
@@ -231,7 +230,7 @@ if __name__ == '__main__':
     chainer.config.use_cudnn           = 'always'
     chainer.config.show()
 
-    updater = training.StandardUpdater(train_iter, opt, device=devices[0])
+    updater = training.StandardUpdater(train_iter, opt, device=args.gpu)
 
     interval = (args.snapshot, 'epoch')
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=result_dir)
@@ -258,7 +257,7 @@ if __name__ == '__main__':
     # trainer.extend(extensions.Evaluator(test_iter, eval_model,
     #     device=devices[0]), trigger=(10, 'iteration'))
     trainer.extend(extensions.Evaluator(test_iter, eval_model,
-        device=devices[0]), trigger=(args.test_freq, 'iteration'))
+        device=args.gpu), trigger=(args.test_freq, 'iteration'))
 
     trainer.extend(extensions.ProgressBar(update_interval=2))
 
