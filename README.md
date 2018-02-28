@@ -58,7 +58,7 @@ Tested dataset is LSP-ext only.
 # Start training
 
 Starting with the prepared shells is the easiest way. If you want to run `train-single.py` with your own settings,
-please check the options first by `python scripts/train.py --help` and modify one of the following shells to customize training settings.
+please check the options first by `python scripts/train-single.py --help` and modify one of the following shells to customize training settings.
 
 ## For LSP Dataset
 
