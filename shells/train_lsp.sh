@@ -2,7 +2,6 @@
 # Copyright (c) 2016 Shunta Saito
 set -x
 
-DATASET_ROOT='/lhome/hisakazu-fu/datasets/lsp_ext'
 PYTHONPATH="`pwd`" \
 HAINER_TYPE_CHECK=0 \
 #time python -m pdb scripts/train_single.py \

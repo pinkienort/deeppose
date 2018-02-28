@@ -2,6 +2,8 @@
 
 NOTE: This is not official implementation. Original paper is [DeepPose: Human Pose Estimation via Deep Neural Networks](http://arxiv.org/abs/1312.4659).
 
+This programs in this repository use [deeppose_tf](https://github.com/asanakoy/deeppose_tf) to evaluate, to get (x,t) from dataset.
+
 # Requirements
 
 - Python 3.5.1+
@@ -18,6 +20,8 @@ I strongly recommend to use Anaconda environment. This repo may be able to be us
 pip install chainer
 pip install numpy
 pip install scikit-image
+pip install scipy
+pip install tqdm
 # for python3
 conda install -c https://conda.binstar.org/menpo opencv3
 # for python2
@@ -39,6 +43,9 @@ python datasets/mpii_dataset.py
     - [Annotation](http://datasets.d2.mpi-inf.mpg.de/leonid14cvpr/mpii_human_pose_v1_u12_1.tar.gz)
     - [Images](http://datasets.d2.mpi-inf.mpg.de/andriluka14cvpr/mpii_human_pose_v1.tar.gz)
 
+
+Tested dataset is LSP-ext only.
+
 ## MPII Dataset
 
 - [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/#download)
@@ -50,7 +57,9 @@ python datasets/mpii_dataset.py
 
 # Start training
 
-Starting with the prepared shells is the easiest way. If you want to run `train.py` with your own settings, please check the options first by `python scripts/train.py --help` and modify one of the following shells to customize training settings.
+Starting with the prepared shells is the easiest way. If you want to run `train-single.py` with your own settings,
+please check the options first by `python scripts/train.py --help` and modify one of the following shells to customize training settings.
+
 
 ## For FLIC Dataset
 
@@ -64,20 +73,30 @@ bash shells/train_flic.sh
 bash shells/train_lsp.sh
 ```
 
+### Fine tuning of VGG16
+
+A neural network model before conv3 or conv4 is frozen, and 
+remain a part of neural network is trained.
+
+1. Create the model which a part of conv-net is frozen. Two models(.npy) are created.
+2. Move these model to target result directory.
+  When you use `--resume-model` option, `train-single.py` use the directory which the resume model is stored, as the result directory.
+3. Run training script.
+
+```
+# In examples, training the NN after conv3.
+python scripts/initmodel.py
+mv <conv-net> <result-directory>
+# Change --resume-model to <result-directory>
+$EDITOR shells/train_lsp_VGG16_conv3_3.sh
+bash shells/train_lsp_VGG16_conv3_3.sh
+```
+
 ## For MPII Dataset
 
 ```
 bash shells/train_mpii.sh
 ```
-
-### GPU memory requirement
-
-- AlexNet
-  - batchsize: 128 -> about 2870 MiB
-  - batchsize: 64 -> about 1890 MiB
-  - batchsize: 32 (default) -> 1374 MiB
-- ResNet50
-  - batchsize: 32 -> 6877 MiB
 
 # Prediction
 
