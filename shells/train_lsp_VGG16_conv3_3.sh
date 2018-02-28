@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright (c) 2016 Shunta Saito
-set -x
 
+DATASET_ROOT="deeppose_tf/datasets/lsp_ext"
 PYTHONPATH="`pwd`" \
 HAINER_TYPE_CHECK=0 \
 time python scripts/train_single.py \

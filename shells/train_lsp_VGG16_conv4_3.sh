@@ -1,11 +1,9 @@
 #!/bin/bash
 # Copyright (c) 2016 Shunta Saito
-set -x
 
-DATASET_ROOT='/lhome/hisakazu-fu/datasets/lsp_ext'
+DATASET_ROOT="deeppose_tf/datasets/lsp_ext"
 PYTHONPATH="`pwd`" \
 HAINER_TYPE_CHECK=0 \
-#time python -m pdb scripts/train_single.py \
 time python scripts/train_single.py \
 --model models/VGG16_conv4_3.py \
 --resume_model results2/VGG16_conv4_3/VGG16_conv4_3.npy \

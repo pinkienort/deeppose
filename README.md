@@ -28,21 +28,21 @@ conda install -c https://conda.binstar.org/menpo opencv3
 conda install opencv
 ```
 
-# Dataset preparation
+### Dataset preparation
 
-```
-bash datasets/download.sh
-python datasets/flic_dataset.py
+```sh
+cd deeppose_tf/datasets
+bash download.sh
+cd ..
 python datasets/lsp_dataset.py
 python datasets/mpii_dataset.py
 ```
 
-- [FLIC-full dataset](http://vision.grasp.upenn.edu/cgi-bin/index.php?n=VideoLearning.FLIC)
-- [LSP Extended dataset](http://www.comp.leeds.ac.uk/mat4saj/lspet_dataset.zip)
-- **MPII dataset**
+- [LSP dataset](http://www.comp.leeds.ac.uk/mat4saj/lsp.html) (1000 tran / 1000 test images)
+- [LSP Extended dataset](http://www.comp.leeds.ac.uk/mat4saj/lspet_dataset.zip) (10000 train images)
+- **MPII dataset** (use original train set and split it into 17928 train / 1991 test images)
     - [Annotation](http://datasets.d2.mpi-inf.mpg.de/leonid14cvpr/mpii_human_pose_v1_u12_1.tar.gz)
     - [Images](http://datasets.d2.mpi-inf.mpg.de/andriluka14cvpr/mpii_human_pose_v1.tar.gz)
-
 
 Tested dataset is LSP-ext only.
 
@@ -59,13 +59,6 @@ Tested dataset is LSP-ext only.
 
 Starting with the prepared shells is the easiest way. If you want to run `train-single.py` with your own settings,
 please check the options first by `python scripts/train.py --help` and modify one of the following shells to customize training settings.
-
-
-## For FLIC Dataset
-
-```
-bash shells/train_flic.sh
-```
 
 ## For LSP Dataset
 
