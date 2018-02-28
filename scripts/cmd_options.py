@@ -150,6 +150,5 @@ def get_arguments():
              'when you resume a training)')
 
     args = parser.parse_args()
-    args.epoch += 1
 
     return args

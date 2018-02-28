@@ -1,3 +1,6 @@
+*.npy
+*.npz
+
 # Vim
 Session.vim
 

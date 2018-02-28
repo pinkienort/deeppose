@@ -33,25 +33,14 @@ class PoseEvaluateModel(Chain):
         y.to_cpu()
         y = y.data.reshape(-1, 14, 2)
 
-        ## evaluate with PCP, mPCP metrics
+        ## evaluate with mPCP metrics
         pcp_per_stick = calculate_metric(joints, y, crop_bbox,
                 self.dataset_name, 'PCP')
         pcp_per_part, pcp_part_names = \
                 poseevaluation.pcp.average_pcp_left_right_limbs(pcp_per_stick)
 
-        relaxed_pcp_per_stick = calculate_metric(joints, y, crop_bbox,
-                self.dataset_name, 'RelaxedPCP')
-        relaxed_pcp_per_part, relaxed_pcp_part_names = \
-                poseevaluation.pcp.average_pcp_left_right_limbs(relaxed_pcp_per_stick)
-
         ## Report above meansured value
-        r['loss'] = loss
-        r['PCP']  = np.mean(pcp_per_stick)
-        r['mPCP'] = np.mean(relaxed_pcp_per_stick)
-        for name, score in zip(pcp_pert_names, pcp_per_part):
-            name = "PCP/{}". format(name)
-            r[name] = score
-        for name, score in zip(relaxed_pcp_part_names, relaxed_pcp_per_part):
-            name = "mPCP/{}". format(name)
-            r[name] = score
-        report(r, self)
+        report({
+            'loss': loss,
+            'mPCP' : np.mean(pcp_per_part)}, self)
+

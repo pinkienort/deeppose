@@ -79,6 +79,7 @@ def get_model(model_path, n_joints, result_dir, resume_model):
 
     # load model
     if resume_model is not None:
+        logging.info('{} is loading'. format(resume_model))
         serializers.load_npz(resume_model, model)
 
     return model
@@ -171,6 +172,8 @@ if __name__ == '__main__':
     result_dir = create_result_dir(args.model, args.resume_model)
     create_logger(args, result_dir)
     model = get_model(args.model, args.n_joints, result_dir, args.resume_model)
+
+
     model = loss.PoseEstimationError(model)
     opt = get_optimizer(model, args.opt, args.lr, adam_alpha=args.adam_alpha,
                         adam_beta1=args.adam_beta1, adam_beta2=args.adam_beta2,
@@ -259,6 +262,28 @@ if __name__ == '__main__':
     trainer.extend(extensions.Evaluator(test_iter, eval_model,
         device=args.gpu), trigger=(args.test_freq, 'iteration'))
 
-    trainer.extend(extensions.ProgressBar(update_interval=2))
+    trainer.extend(extensions.ProgressBar(update_interval=10))
+
+    if 'conv3_3' in args.model:
+        model.predictor.conv1_1.disable_update()
+        model.predictor.conv1_2.disable_update()
+        model.predictor.conv2_1.disable_update()
+        model.predictor.conv2_2.disable_update()
+        model.predictor.conv3_1.disable_update()
+        model.predictor.conv3_2.disable_update()
+        model.predictor.conv3_3.disable_update()
+    elif 'conv4_3' in args.model:
+        model.predictor.conv1_1.disable_update()
+        model.predictor.conv1_2.disable_update()
+        model.predictor.conv2_1.disable_update()
+        model.predictor.conv2_2.disable_update()
+        model.predictor.conv3_1.disable_update()
+        model.predictor.conv3_2.disable_update()
+        model.predictor.conv3_3.disable_update()
+        model.predictor.conv4_1.disable_update()
+        model.predictor.conv4_2.disable_update()
+        model.predictor.conv4_3.disable_update()
+    for name, link in model.namedlinks():
+        logging.info("update_enabled: {} of {}". format(link.update_enabled, name))
 
     trainer.run()
